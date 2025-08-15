@@ -4,31 +4,6 @@
   padding: 7px;
   padding: center;
 }
-/* Classe global para elementos que escalam */
-.auto-scale {
-  width: 100%;
-  height: auto;
-  max-width: 100%;
-  display: block;
-  object-fit: contain;
-  box-sizing: border-box;
-}
-
-/* Texto responsivo */
-.auto-scale-text {
-  font-size: 4vw; /* escala com a tela */
-}
-
-/* Ajustes específicos para telas pequenas */
-@media (max-width: 600px) {
-  .auto-scale-text {
-    font-size: 6vw; /* aumenta proporcionalmente no celular */
-  }
-
-  .auto-scale {
-    width: 95%;   /* dá uma pequena margem nas bordas */
-  }
-}
 
 body {
     background-image: linear-gradient(-75deg, #2E5EAA, #13C4A3);
@@ -57,3 +32,37 @@ img{
 a {
     color: rgb(250, 87, 114);
 }
+
+/* Classe global para elementos que escalam */
+.auto-scale {
+  width: 100%;        /* ocupa todo o container */
+  height: auto;       /* mantém proporção */
+  max-width: 100%;    /* não ultrapassa o container */
+  display: block;
+  object-fit: contain; /* mantém proporção em imagens e vídeos */
+}
+
+/* Texto responsivo */
+.auto-scale-text {
+  font-size: 4vw;     /* escala proporcional à tela */
+}
+
+/* Ajustes específicos para telas pequenas */
+@media (max-width: 600px) {
+  .auto-scale-text {
+    font-size: 6vw;   /* aumenta proporcionalmente no celular */
+  }
+
+  .auto-scale {
+    width: 95%;       /* pequena margem nas bordas */
+  }
+}
+
+/* Escala automática para todos os elementos */
+* {
+  max-width: 100%;   /* nunca ultrapassa o container */
+  height: auto;      /* mantém proporção para imagens e vídeos */
+  box-sizing: border-box;
+}
+
+
