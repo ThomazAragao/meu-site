@@ -65,4 +65,9 @@ a {
   box-sizing: border-box;
 }
 
+audio {
+  width: 100%;   /* ocupa a largura do container */
+  height: auto;  /* mantém a barra visível */
+}
+
 
