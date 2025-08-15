@@ -4,6 +4,27 @@
   padding: 7px;
   padding: center;
 }
+/* Classe global para escala automática */
+.auto-scale {
+  width: 100%;        /* ocupa 100% do container */
+  height: auto;       /* mantém proporção */
+  max-width: 100%;    /* não ultrapassa o container */
+  display: block;     /* remove gaps em imagens inline */
+  object-fit: contain;/* mantém proporção em imagens e vídeos */
+  box-sizing: border-box; /* inclui padding e border no tamanho */
+}
+
+/* Para textos responsivos usando viewport units */
+.auto-scale-text {
+  font-size: 4vw;     /* escala proporcional à largura da tela */
+}
+
+/* Para flex/grid */
+.auto-scale-flex {
+  flex: 1 1 auto;     /* cresce e encolhe automaticamente */
+  min-width: 0;       /* evita overflow em flexbox */
+}
+
 body {
     background-image: linear-gradient(-75deg, #2E5EAA, #13C4A3);
     color: #00120b;;
