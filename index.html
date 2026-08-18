@@ -1,50 +1,868 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Site</title>
-    <link rel="shortcut icon" href="thomaz.ico" type="image/x-icon">
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bull Racing FSAE | Loja Oficial & Doações</title>
+
+<!-- Ícone da aba do navegador -->
+<link rel="icon" type="image/png" href="Logo-Icone secundário.png">
+
+<!-- Fonte de exibição condensada para transmitir a identidade "racing" da equipe -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* =========================================================
+     TOKENS — paleta oficial da Bull Racing FSAE (não alterar)
+     ========================================================= */
+  :root{
+    --preto:        #0e0d0d;
+    --vermelho:     #e40707;
+    --vermelho-esc: #920101;
+    --vinho:        #520000;
+    --vermelho-med: #9c2320;
+    --dourado-cl:   #d4a956;
+    --amarelo-ouro: #ffc004;
+    --laranja-dr:   #e49207;
+
+    --texto:        #f2ece0;         /* branco levemente quente, legível sobre o preto */
+    --fundo-card:   #171414;         /* variação sutil do preto para dar profundidade */
+    --borda:        rgba(212,169,86,0.22);
+
+    --fonte-display: 'Oswald', Arial, sans-serif;
+    --fonte-corpo:   Arial, Helvetica, sans-serif;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin: 0;
+    background: var(--preto);
+    color: var(--texto);
+    font-family: var(--fonte-corpo);
+    line-height: 1.6;
+    /* leve textura de "asfalto" via gradiente radial repetido, mantém o minimalismo */
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(212,169,86,0.05) 1px, transparent 0);
+    background-size: 26px 26px;
+  }
+
+  h1,h2,h3{ font-family: var(--fonte-display); margin: 0; letter-spacing: 0.5px; }
+
+  a{ color: var(--dourado-cl); text-decoration: none; }
+
+  .container{ max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* =========================================================
+     CABEÇALHO FIXO
+     ========================================================= */
+  header{
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(14,13,13,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--borda);
+  }
+  .header-inner{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 24px;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .logo-wrap{ display:flex; align-items:center; gap:12px; }
+  .logo-wrap img{ height: 150px; width: auto; display:block; }
+
+  nav ul{
+    list-style: none;
+    display: flex;
+    gap: 28px;
+    margin: 0; padding: 0;
+  }
+  nav a{
+    color: var(--texto);
+    font-family: var(--fonte-display);
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    position: relative;
+    padding: 6px 2px;
+    transition: color 0.25s ease;
+  }
+  /* sublinhado que "acelera" da esquerda para a direita no hover — assinatura sutil de movimento */
+  nav a::after{
+    content:"";
+    position:absolute; left:0; bottom:0;
+    width:0; height:2px;
+    background: var(--vermelho);
+    transition: width 0.3s ease;
+  }
+  nav a:hover{ color: var(--amarelo-ouro); }
+  nav a:hover::after{ width:100%; }
+
+  #cart-toggle{
+    background: var(--vermelho);
+    border: none;
+    color: var(--texto);
+    font-family: var(--fonte-display);
+    letter-spacing: 1px;
+    padding: 8px 14px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 14px;
+    display:flex; align-items:center; gap:8px;
+    transition: background 0.25s ease, transform 0.15s ease;
+  }
+  #cart-toggle:hover{ background: var(--vermelho-esc); transform: translateY(-1px); }
+  #cart-count{
+    background: var(--preto);
+    color: var(--amarelo-ouro);
+    border-radius: 50%;
+    min-width: 20px; height:20px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 12px;
+  }
+
+  .menu-toggle{ display:none; background:none; border:none; color:var(--texto); font-size:26px; cursor:pointer; }
+
+  /* =========================================================
+     HERO — abre com a maior afirmação visual da marca
+     ========================================================= */
+  .hero{
+    padding: 200px 24px 30px; 
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero h1{
+    font-size: clamp(38px, 6vw, 64px);
+    color: var(--texto);
+    text-transform: uppercase;
+    position: relative;
+  }
+  .hero h1 span{ color: var(--vermelho); }
+  .hero p.tagline{
+    font-family: var(--fonte-display);
+    color: var(--dourado-cl);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-size: 14px;
+    margin-top: 0;
+    position: relative;
+  }
+
+  /* =========================================================
+     SEÇÕES — estrutura genérica
+     ========================================================= */
+  /* Reduzido o padding padrão de todas as seções de 80px para 30px */
+  section{ padding: 30px 0; border-top: 1px solid var(--borda); }
+  
+  /* Remove a borda superior apenas da primeira seção */
+  section:first-of-type{ border-top: none; }
+
+  .section-label{
+    font-family: var(--fonte-display);
+    color: var(--vermelho);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 13px;
+    margin-bottom: 8px;
+    display:block;
+  }
+  .section-title{
+    font-size: clamp(26px, 4vw, 36px);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    color: var(--texto);
+  }
+  .section-title::after{
+    content:"";
+    display:block;
+    width:60px; height:3px;
+    background: var(--amarelo-ouro);
+    margin-top: 14px;
+  }
+
+  /* TEXTOS PADRÕES DE SEÇÕES */
+  .section-text { max-width: 720px; color: #cfc7ba; font-size: 16px; margin-bottom: 24px; }
+
+  /* CONTATOS */
+  .contatos-grid{ display:flex; gap: 24px; flex-wrap: wrap; }
+  .contato-card{
+    background: var(--fundo-card);
+    border: 1px solid var(--borda);
+    border-left: 3px solid var(--vermelho);
+    padding: 22px 26px;
+    flex: 1 1 220px;
+    border-radius: 4px;
+  }
+  .contato-card .icone{ font-size: 22px; margin-right: 10px; }
+  .contato-card a{ color: var(--texto); font-size: 16px; }
+  .contato-card a:hover{ color: var(--amarelo-ouro); }
+  .contato-card .rotulo{
+    display:block; font-family: var(--fonte-display);
+    color: var(--dourado-cl); font-size: 12px; letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+
+  /* REDES SOCIAIS */
+  .redes-grid{ display:flex; gap: 16px; flex-wrap: wrap; }
+  .rede-item{
+    background: var(--fundo-card);
+    border: 1px solid var(--borda);
+    padding: 16px 22px;
+    border-radius: 4px;
+    display:flex; align-items:center; gap:10px;
+    font-family: var(--fonte-display);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 14px;
+    transition: border-color 0.25s ease, transform 0.15s ease;
+  }
+  .rede-item:hover{ border-color: var(--vermelho); transform: translateY(-2px); }
+  .rede-item .icone{ font-size: 20px; }
+
+  /* PARCERIAS */
+  .parceiros-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+    gap: 16px;
+  }
+  .parceiro-placeholder{
+    background: var(--fundo-card);
+    border: 1px dashed var(--borda);
+    border-radius: 4px;
+    padding: 26px 14px;
+    text-align:center;
+    font-family: var(--fonte-display);
+    letter-spacing: 1px;
+    color: var(--dourado-cl);
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+
+  /* CARRINHO / LOJA */
+  .produtos-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap: 22px;
+    margin-bottom: 30px;
+  }
+  .produto-card{
+    background: var(--fundo-card);
+    border: 1px solid var(--borda);
+    border-radius: 6px;
+    overflow:hidden;
+    display:flex; flex-direction:column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .produto-card:hover{ transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,0.4); }
+  .produto-img{
+    height: 170px;
+    display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(135deg, var(--vinho), var(--preto));
+    border-bottom: 1px solid var(--borda);
+  }
+  .produto-img img{
+    height: 78%; width:auto;
+    max-width: 78%;
+    object-fit: contain;
+    transition: transform 0.25s ease;
+  }
+  .produto-card:hover .produto-img img{ transform: scale(1.06); }
+  .produto-body{ padding: 18px 20px; display:flex; flex-direction:column; gap:10px; flex:1; }
+  .produto-body h3{ font-size: 18px; text-transform: uppercase; }
+  .produto-preco{ color: var(--amarelo-ouro); font-family: var(--fonte-display); font-size: 20px; }
+  .btn-add{
+    margin-top: auto;
+    background: transparent;
+    border: 1.5px solid var(--vermelho);
+    color: var(--texto);
+    padding: 10px 14px;
+    font-family: var(--fonte-display);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  .btn-add:hover{ background: var(--vermelho); }
+
+  /* =========================================================
+     NOTIFICAÇÃO (TOAST) DE ITEM ADICIONADO
+     ========================================================= */
+  .toast-notificacao{
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px); /* Escondido para baixo inicialmente */
+    background: var(--fundo-card);
+    border: 1px solid var(--borda);
+    border-left: 4px solid var(--vermelho);
+    color: var(--texto);
+    padding: 14px 24px;
+    border-radius: 4px;
+    font-family: var(--fonte-display);
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .toast-notificacao.show{
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* =========================================================
+     DRAWER DO CARRINHO E PIX
+     ========================================================= */
+  .cart-overlay{
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 190;
+  }
+  .cart-overlay.open{ opacity: 1; pointer-events: auto; }
+
+  .cart-drawer{
+    position: fixed;
+    top: 0; right: 0;
+    height: 100vh;
+    width: min(440px, 92vw);
+    background: var(--fundo-card);
+    border-left: 1px solid var(--borda);
+    box-shadow: -14px 0 40px rgba(0,0,0,0.55);
+    z-index: 200;
+    transform: translateX(100%);
+    transition: transform 0.35s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .cart-drawer.open{ transform: translateX(0); }
+
+  .cart-drawer-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 22px 24px;
+    border-bottom: 1px solid var(--borda);
+    flex-shrink: 0;
+  }
+  .cart-drawer-head h3{ text-transform: uppercase; font-size: 20px; }
+  .cart-drawer-close{
+    background: none; border: 1px solid var(--borda);
+    color: var(--texto); width: 34px; height: 34px;
+    border-radius: 50%; cursor: pointer; font-size: 18px;
+    display:flex; align-items:center; justify-content:center;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .cart-drawer-close:hover{ border-color: var(--vermelho); color: var(--amarelo-ouro); }
+
+  .cart-drawer-body{
+    padding: 22px 24px 32px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .cart-drawer-body h4{
+    font-family: var(--fonte-display);
+    color: var(--dourado-cl);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 12px;
+    margin: 26px 0 12px;
+  }
+  .cart-drawer-body h4:first-child{ margin-top: 0; }
+
+  #cart-items{ list-style:none; margin:0; padding:0; }
+  #cart-items li{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--borda);
+    gap: 10px; flex-wrap: wrap;
+  }
+  #cart-items li:last-child{ border-bottom:none; }
+  .item-nome{ flex:1; min-width: 120px; }
+  .item-qtd-controls{ display:flex; align-items:center; gap:8px; }
+  .item-qtd-controls button{
+    background: var(--vermelho-esc); color:var(--texto); border:none;
+    width:26px; height:26px; border-radius:3px; cursor:pointer; font-size:14px;
+    transition: background 0.2s ease;
+  }
+  .item-qtd-controls button:hover{ background: var(--vermelho); }
+  .item-subtotal{ color: var(--dourado-cl); min-width: 76px; text-align:right; }
+  .cart-empty{ color:#9c9284; font-style: italic; padding: 10px 0; }
+
+  .cart-totais{
+    display:flex; justify-content:space-between;
+    margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid var(--borda);
+    font-family: var(--fonte-display);
+    font-size: 18px;
+  }
+  .cart-totais span:last-child{ color: var(--amarelo-ouro); }
+
+  /* Dados de compra */
+  .campo{ margin-bottom: 14px; }
+  .campo label{
+    display:block; font-size: 12px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--dourado-cl); margin-bottom: 6px;
+  }
+  .campo input,
+  .campo textarea{
+    width: 100%;
+    background: var(--preto);
+    border: 1px solid var(--borda);
+    color: var(--texto);
+    padding: 11px 12px;
+    border-radius: 4px;
+    font-family: var(--fonte-corpo);
+    font-size: 14px;
+    resize: vertical;
+  }
+  .campo input:focus,
+  .campo textarea:focus{ outline: none; border-color: var(--vermelho); }
+  .campo input::placeholder,
+  .campo textarea::placeholder{ color: #766f63; }
+
+  .btn-finalizar{
+    width:100%;
+    margin-top: 8px;
+    background: var(--vermelho);
+    color: var(--texto);
+    border:none;
+    padding: 14px;
+    font-family: var(--fonte-display);
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: 3px;
+    cursor:pointer;
+    transition: background 0.25s ease, transform 0.15s ease;
+  }
+  .btn-finalizar:hover{ background: var(--laranja-dr); transform: translateY(-1px); }
+  .btn-finalizar:disabled{ background:#3a3a3a; color:#888; cursor:not-allowed; transform:none; }
+
+  /* ESTILO DO CARD DO PIX (usado para carrinho e doações) */
+  .pix-box{
+    margin-top: 26px;
+    display:flex; align-items:center; gap:18px;
+    background: var(--fundo-card);
+    border: 1px solid var(--borda);
+    border-left: 3px solid var(--amarelo-ouro);
+    padding: 18px 20px;
+    border-radius: 6px;
+    flex-wrap: wrap;
+  }
+  .pix-box img{ border-radius: 4px; background:#fff; padding:6px; flex-shrink: 0; }
+  .pix-info{ flex: 1; min-width: 160px; }
+  .pix-info .rotulo{
+    font-family: var(--fonte-display); color: var(--dourado-cl);
+    letter-spacing: 2px; text-transform: uppercase; font-size: 12px; display:block; margin-bottom:6px;
+  }
+  .pix-info p{ font-size: 13px; margin: 0 0 8px; }
+  .pix-info code{
+    background: var(--preto); padding: 4px 8px; border-radius:3px; color: var(--amarelo-ouro); font-size: 13px; border: 1px solid var(--borda);
+  }
+
+  /* =========================================================
+     RODAPÉ
+     ========================================================= */
+  footer{
+    padding: 34px 24px;
+    text-align:center;
+    color:#8a8377;
+    font-size: 13px;
+    border-top: 1px solid var(--borda);
+  }
+  footer strong{ color: var(--dourado-cl); }
+
+  /* =========================================================
+     RESPONSIVIDADE
+     ========================================================= */
+  @media (max-width: 760px){
+    nav{
+      position: absolute;
+      top: 100%; left:0; right:0;
+      background: rgba(14,13,13,0.98);
+      border-bottom: 1px solid var(--borda);
+      display:none;
+      flex-direction:column;
+    }
+    nav.open{ display:flex; }
+    nav ul{ flex-direction:column; padding: 16px 24px; gap: 18px; }
+    .menu-toggle{ display:block; }
+    .logo-wrap img{ height: 84px; }
+    .hero{ padding-top: 130px; }
+  }
+</style>
 </head>
 <body>
-    <header></header>
-    <main>
-        <img src="thomaz.jpg" alt="Thomaz Aragão">
-        <h1>Meu site <strong>Thomaz Aragão</strong></h1>
-        <p>Site feito por Thomaz Aragão &#x1F604;</div> <br></p>
-        <video src="never-gonna-give-you-up.mp4" width="500" controls poster="rick-astley.jpg" autoplay loop></video>
-        <p>Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)</p>
-        <audio src="never-gonna-give-you-up.MP3" controls autoplay loop></audio>
-        <a href="page002.html" rel="next"><br><img src="">Quem sou eu?</a>
-        <p><em>Itálico em EM mas pode ser I mas sem sentido semântico</em></p>
-        <p><strong>Negrito em STRONG mas pode ser B mas sem sentido semântico</strong></p>
-        <a href="https://www.instagram.com/thomazaragaao/" target="_blank">Meu Instagram<br></a>
-        <button onclick="alert('Isso é um botão!')">Botão</button>
-        <p><mark>Um texto com marcador</mark></p>
-        <p>a<sup>2</sup> = b<sup>2</sup> + c<sup>2</sup></p>
-        <p>H<sub>2</sub>O</p>
-        <p><code>print("Hello World!")</code></p>
-        <pre>
-            <code>
-opc = input("Você gosta de farinha?(s/n):")
-if opc == s:
-    opc1 = input("E de peixe?(s/n):")
-    if opc1 == "s":
-        print("Tu é doidoooooo!")
-    if opc == "n":
-        print("Ata...")   
-            </code>
-        </pre>
-        <ol type="I" style="padding: 25px;">
-            <li>Acordar</li>
-            <li>Tomar banho</li>
-            <li>Tomar café</li>
-            <li>Ir para a universidade</li>
-        </ol>
-        <p><u>Olha a foca bebe:</u></p>
-        <img src="https://admin.cnnbrasil.com.br/wp-content/uploads/sites/12/2021/11/bebe-foca.jpg?w=1200&h=900&crop=0" alt="Foca bebe">
-    </main>
-    <footer></footer>
+
+<!-- ================= CABEÇALHO ================= -->
+<header>
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <img src="logo.png" alt="Bull Racing FSAE">
+    </div>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">&#9776;</button>
+    <nav id="mainNav">
+      <ul>
+        <li><a href="#sobre">Sobre</a></li>
+        <li><a href="#doacoes">Doações</a></li>
+        <li><a href="#contatos">Contatos</a></li>
+        <li><a href="#redes">Redes Sociais</a></li>
+        <li><a href="#parcerias">Parcerias</a></li>
+        <li><button id="cart-toggle">🛒 Carrinho <span id="cart-count">0</span></button></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<div class="hero">
+  <h1>BULL <span>RACING</span> FSAE</h1>
+  <p class="tagline">Engenharia, velocidade e paixão na pista</p>
+</div>
+
+<div class="container">
+
+  <!-- ================= CARRINHO / LOJA ================= -->
+  <section id="produtos">
+    <span class="section-label">Loja oficial</span>
+    <h2 class="section-title">Produtos</h2>
+
+    <div class="produtos-grid" id="produtos-grid">
+      <!-- Produtos inseridos via JavaScript a partir do array `produtos` -->
+    </div>
+  </section>
+
+  <!-- ================= SOBRE ================= -->
+  <section id="sobre">
+    <span class="section-label">Quem somos</span>
+    <h2 class="section-title">Sobre a Equipe</h2>
+    <p class="section-text">
+      A Bull Racing FSAE nasceu do desejo de estudantes de engenharia de transformar teoria em performance real de pista.
+      Reunindo alunos de diversos períodos e cursos, a equipe projeta, fabrica e compete com um protótipo de fórmula
+      dentro das regras da Fórmula SAE, vivendo na prática todo o ciclo de um veículo de competição: da concepção
+      aérodinâmica ao ajuste fino de suspensão e powertrain. Mais do que construir um carro, a Bull Racing forma
+      engenheiros prontos para o mercado, através de trabalho em equipe, gestão de projetos e superação constante
+      de desafios técnicos. Cada peça, cada solda e cada linha de código carregam o espírito do touro: força,
+      determinação e velocidade.
+    </p>
+  </section>
+
+  <!-- ================= DOAÇÕES (PIX) ================= -->
+  <section id="doacoes">
+    <span class="section-label">Invista no projeto</span>
+    <h2 class="section-title">Faça uma Doação</h2>
+    <p class="section-text">
+      Sua contribuição direta é fundamental para acelerar o desenvolvimento do nosso protótipo. 
+      Qualquer valor doado nos ajuda a comprar materiais, fabricar peças de alto desempenho e viabilizar 
+      a ida da equipe para as competições da Fórmula SAE. Faça parte dessa jornada e acelere com a gente!
+    </p>
+    
+    <div class="pix-box" style="margin-top: 0; max-width: 650px;">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bullracing23%40gmail.com" width="120" height="120" alt="QR Code Pix Bull Racing Doações">
+      <div class="pix-info">
+        <span class="rotulo">Chave Pix para Doações</span>
+        <p>Escaneie o QR Code com o aplicativo do seu banco ou copie a nossa chave e-mail abaixo para contribuir com o valor que desejar.</p>
+        <code>bullracing23@gmail.com</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTATOS ================= -->
+  <section id="contatos">
+    <span class="section-label">Fale conosco</span>
+    <h2 class="section-title">Contatos</h2>
+    <div class="contatos-grid">
+      <div class="contato-card">
+        <span class="rotulo">E-mail</span>
+        <span class="icone">✉️</span><a href="mailto:bullracing23@gmail.com">bullracing23@gmail.com</a>
+      </div>
+      <div class="contato-card">
+        <span class="rotulo">Marcus (Capitão) / WhatsApp</span>
+        <span class="icone">📞</span><a href="https://wa.me/5599991575351" target="_blank" rel="noopener">+55 99 9157-5351</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= REDES SOCIAIS ================= -->
+  <section id="redes">
+    <span class="section-label">Nos siga</span>
+    <h2 class="section-title">Redes Sociais</h2>
+    <div class="redes-grid">
+      <a class="rede-item" href="https://instagram.com" target="_blank" rel="noopener"><span class="icone">📷</span> Instagram</a>
+      <a class="rede-item" href="https://youtube.com" target="_blank" rel="noopener"><span class="icone">▶️</span> YouTube</a>
+      <a class="rede-item" href="https://tiktok.com" target="_blank" rel="noopener"><span class="icone">🎵</span> TikTok</a>
+    </div>
+  </section>
+
+  <!-- ================= PARCERIAS ================= -->
+  <section id="parcerias">
+    <span class="section-label">Quem acredita na gente</span>
+    <h2 class="section-title">Parcerias</h2>
+    <div class="parceiros-grid">
+      <div class="parceiro-placeholder">Parceiro 01</div>
+      <div class="parceiro-placeholder">Parceiro 02</div>
+      <div class="parceiro-placeholder">Parceiro 03</div>
+      <div class="parceiro-placeholder">Parceiro 04</div>
+      <div class="parceiro-placeholder">Seja um parceiro</div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ================= CARRINHO — PAINEL LATERAL (DRAWER) ================= -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<aside class="cart-drawer" id="cart-drawer" aria-hidden="true">
+  <div class="cart-drawer-head">
+    <h3>Seu Pedido</h3>
+    <button class="cart-drawer-close" id="cart-drawer-close" aria-label="Fechar carrinho">✕</button>
+  </div>
+
+  <div class="cart-drawer-body">
+    <h4>Itens</h4>
+    <ul id="cart-items">
+      <li class="cart-empty">Seu carrinho está vazio. Adicione produtos na loja.</li>
+    </ul>
+    <div class="cart-totais">
+      <span>Total</span>
+      <span id="cart-total">R$ 0,00</span>
+    </div>
+
+    <h4>Dados para o pedido</h4>
+    <div class="campo">
+      <label for="input-nome">Nome completo</label>
+      <input type="text" id="input-nome" placeholder="Seu nome">
+    </div>
+    <div class="campo">
+      <label for="input-telefone">Seu WhatsApp</label>
+      <input type="tel" id="input-telefone" placeholder="(99) 99999-9999">
+    </div>
+    <div class="campo">
+      <label for="input-obs">Observações (tamanho, retirada/entrega...)</label>
+      <textarea id="input-obs" rows="3" placeholder="Ex: camiseta tamanho M, retirar na oficina"></textarea>
+    </div>
+
+    <button class="btn-finalizar" id="btn-finalizar" disabled>Finalizar Pedido no WhatsApp</button>
+
+    <!-- QR Code Pix -->
+    <div class="pix-box" style="background: var(--preto);">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bullracing23%40gmail.com" width="120" height="120" alt="QR Code Pix Bull Racing Pagamento">
+      <div class="pix-info">
+        <span class="rotulo">Ou pague via Pix</span>
+        <p>Escaneie o QR Code e envie o comprovante pelo WhatsApp.</p>
+        <code>bullracing23@gmail.com</code>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ================= TOAST DE NOTIFICAÇÃO ================= -->
+<div id="toast-notificacao" class="toast-notificacao"></div>
+
+<!-- ================= RODAPÉ ================= -->
+<footer>
+  &copy; <span id="ano-atual"></span> <strong>Bull Racing FSAE</strong>. Todos os direitos reservados.
+</footer>
+
+<script>
+  /* =========================================================
+     DADOS DOS PRODUTOS
+     ========================================================= */
+  const produtos = [
+    { id: 'camiseta', nome: 'Camiseta Oficial', preco: 79.90, imagem: 'produto-camiseta.png' },
+    { id: 'bone',     nome: 'Boné Bull Racing',  preco: 59.90, imagem: 'produto-bone.png' },
+    { id: 'caneca',   nome: 'Caneca Oficial',    preco: 39.90, imagem: 'produto-caneca.png' },
+    { id: 'camiseta-2', nome: 'Camiseta Oficial', preco: 79.90, imagem: 'produto-camiseta.png' },
+    { id: 'bone-2',     nome: 'Boné Bull Racing',  preco: 59.90, imagem: 'produto-bone.png' },
+    { id: 'caneca-2',   nome: 'Caneca Oficial',    preco: 39.90, imagem: 'produto-caneca.png' },
+    { id: 'camiseta-3', nome: 'Camiseta Oficial', preco: 79.90, imagem: 'produto-camiseta.png' },
+    { id: 'bone-3',     nome: 'Boné Bull Racing',  preco: 59.90, imagem: 'produto-bone.png' },
+    { id: 'caneca-3',   nome: 'Caneca Oficial',    preco: 39.90, imagem: 'produto-caneca.png' },
+  ];
+
+  // Estado do carrinho: objeto { idProduto: quantidade }
+  let carrinho = {};
+  let toastTimeout;
+
+  // Formata número para o padrão monetário brasileiro
+  function formatarMoeda(valor){
+    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+
+  // Renderiza os cards de produto na grade
+  function renderizarProdutos(){
+    const grid = document.getElementById('produtos-grid');
+    grid.innerHTML = produtos.map(p => `
+      <div class="produto-card">
+        <div class="produto-img"><img src="${p.imagem}" alt="${p.nome}"></div>
+        <div class="produto-body">
+          <h3>${p.nome}</h3>
+          <span class="produto-preco">${formatarMoeda(p.preco)}</span>
+          <button class="btn-add" onclick="adicionarAoCarrinho('${p.id}')">Adicionar ao carrinho</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Exibe o balãozinho (toast) de notificação
+  function mostrarNotificacao(mensagem) {
+    const toast = document.getElementById('toast-notificacao');
+    toast.innerHTML = `<span>🛒</span> ${mensagem}`;
+    toast.classList.add('show');
+    
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3000);
+  }
+
+  // Adiciona uma unidade do produto ao carrinho sem abrir o drawer
+  function adicionarAoCarrinho(id){
+    carrinho[id] = (carrinho[id] || 0) + 1;
+    renderizarCarrinho();
+    
+    // Encontra o nome do produto adicionado e chama a notificação
+    const produto = produtos.find(p => p.id === id);
+    mostrarNotificacao(produto.nome + ' no carrinho!');
+  }
+
+  // Altera a quantidade de um item já no carrinho (+1 / -1)
+  function alterarQuantidade(id, delta){
+    if(!carrinho[id]) return;
+    carrinho[id] += delta;
+    if(carrinho[id] <= 0) delete carrinho[id];
+    renderizarCarrinho();
+  }
+
+  // Abre / fecha o painel lateral (drawer) do carrinho
+  function abrirCarrinho(){
+    document.getElementById('cart-drawer').classList.add('open');
+    document.getElementById('cart-overlay').classList.add('open');
+    document.getElementById('cart-drawer').setAttribute('aria-hidden', 'false');
+  }
+  function fecharCarrinho(){
+    document.getElementById('cart-drawer').classList.remove('open');
+    document.getElementById('cart-overlay').classList.remove('open');
+    document.getElementById('cart-drawer').setAttribute('aria-hidden', 'true');
+  }
+
+  // Recalcula e redesenha a lista do carrinho + totais
+  function renderizarCarrinho(){
+    const lista = document.getElementById('cart-items');
+    const ids = Object.keys(carrinho);
+    let total = 0;
+    let totalItens = 0;
+
+    if(ids.length === 0){
+      lista.innerHTML = '<li class="cart-empty">Seu carrinho está vazio. Adicione produtos na loja.</li>';
+    } else {
+      lista.innerHTML = ids.map(id => {
+        const produto = produtos.find(p => p.id === id);
+        const qtd = carrinho[id];
+        const subtotal = produto.preco * qtd;
+        total += subtotal;
+        totalItens += qtd;
+        return `
+          <li>
+            <span class="item-nome">${produto.nome}</span>
+            <div class="item-qtd-controls">
+              <button onclick="alterarQuantidade('${id}', -1)" aria-label="Diminuir quantidade">–</button>
+              <span>${qtd}</span>
+              <button onclick="alterarQuantidade('${id}', 1)" aria-label="Aumentar quantidade">+</button>
+            </div>
+            <span class="item-subtotal">${formatarMoeda(subtotal)}</span>
+          </li>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('cart-total').textContent = formatarMoeda(total);
+    document.getElementById('cart-count').textContent = totalItens;
+
+    const btnFinalizar = document.getElementById('btn-finalizar');
+    btnFinalizar.disabled = ids.length === 0;
+  }
+
+  // Monta a mensagem do pedido (com dados do cliente) e abre o WhatsApp do capitão Marcus
+  function finalizarPedido(){
+    const ids = Object.keys(carrinho);
+    if(ids.length === 0) return;
+
+    const nome = document.getElementById('input-nome').value.trim();
+    const telefone = document.getElementById('input-telefone').value.trim();
+    const observacoes = document.getElementById('input-obs').value.trim();
+
+    if(!nome){
+      alert('Por favor, preencha seu nome antes de finalizar o pedido.');
+      document.getElementById('input-nome').focus();
+      return;
+    }
+
+    let total = 0;
+    let linhas = ids.map(id => {
+      const produto = produtos.find(p => p.id === id);
+      const qtd = carrinho[id];
+      const subtotal = produto.preco * qtd;
+      total += subtotal;
+      return `- ${produto.nome} (x${qtd}) — ${formatarMoeda(subtotal)}`;
+    });
+
+    let corpo = `Olá, Marcus! Gostaria de confirmar o seguinte pedido na loja da Bull Racing FSAE:\n\n`;
+    corpo += `*Cliente:* ${nome}\n`;
+    if(telefone) corpo += `*WhatsApp:* ${telefone}\n`;
+    corpo += `\n${linhas.join('\n')}\n\n`;
+    corpo += `*Total: ${formatarMoeda(total)}*\n`;
+    if(observacoes) corpo += `\n*Observações:* ${observacoes}\n`;
+    corpo += `\nPode confirmar a disponibilidade e a forma de pagamento? Obrigado!`;
+
+    const mensagem = encodeURIComponent(corpo);
+
+    // Número de destino: +55 99 9157-5351 (Marcus, Capitão) — apenas dígitos para o link wa.me
+    const numeroWhatsApp = '5599991575351';
+    window.open(`https://wa.me/${numeroWhatsApp}?text=${mensagem}`, '_blank');
+  }
+
+  // Menu mobile (hambúrguer)
+  document.getElementById('menuToggle').addEventListener('click', () => {
+    document.getElementById('mainNav').classList.toggle('open');
+  });
+
+  // Fecha o menu mobile ao clicar em um item
+  document.querySelectorAll('#mainNav a').forEach(link => {
+    link.addEventListener('click', () => document.getElementById('mainNav').classList.remove('open'));
+  });
+
+  // Abertura/fechamento do painel lateral do carrinho
+  document.getElementById('cart-toggle').addEventListener('click', abrirCarrinho);
+  document.getElementById('cart-drawer-close').addEventListener('click', fecharCarrinho);
+  document.getElementById('cart-overlay').addEventListener('click', fecharCarrinho);
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') fecharCarrinho(); });
+
+  document.getElementById('btn-finalizar').addEventListener('click', finalizarPedido);
+
+  // Ano atual no rodapé
+  document.getElementById('ano-atual').textContent = new Date().getFullYear();
+
+  // Inicialização
+  renderizarProdutos();
+  renderizarCarrinho();
+</script>
+
 </body>
 </html>
