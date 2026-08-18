@@ -53,7 +53,8 @@
 
   a{ color: var(--dourado-cl); text-decoration: none; }
 
-  .container{ max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  .container{ width: min(100% - 48px, 1080px); margin: 0 auto; }
+  section, [id]{ scroll-margin-top: 112px; }
 
   /* =========================================================
      CABEÇALHO FIXO
@@ -67,20 +68,24 @@
     border-bottom: 1px solid var(--borda);
   }
   .header-inner{
+    width: min(100% - 48px, 1080px);
+    min-height: 88px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 4px 24px;
-    max-width: 1080px;
+    gap: 24px;
+    padding: 8px 0;
     margin: 0 auto;
   }
-  .logo-wrap{ display:flex; align-items:center; gap:12px; }
-  .logo-wrap img{ height: 150px; width: auto; display:block; }
+  .logo-wrap{ display:flex; align-items:center; gap:12px; min-width:0; }
+  .logo-wrap img{ height: clamp(58px, 8vw, 88px); width: auto; max-width: 100%; display:block; }
 
+  nav{ min-width: 0; }
   nav ul{
     list-style: none;
     display: flex;
-    gap: 28px;
+    align-items: center;
+    gap: clamp(14px, 2.2vw, 28px);
     margin: 0; padding: 0;
   }
   nav a{
@@ -90,7 +95,9 @@
     letter-spacing: 1.5px;
     text-transform: uppercase;
     position: relative;
-    padding: 6px 2px;
+    display: inline-block;
+    padding: 10px 2px;
+    white-space: nowrap;
     transition: color 0.25s ease;
   }
   /* sublinhado que "acelera" da esquerda para a direita no hover — assinatura sutil de movimento */
@@ -110,8 +117,10 @@
     color: var(--texto);
     font-family: var(--fonte-display);
     letter-spacing: 1px;
+    min-height: 42px;
     padding: 8px 14px;
     cursor: pointer;
+    white-space: nowrap;
     border-radius: 3px;
     font-size: 14px;
     display:flex; align-items:center; gap:8px;
@@ -127,7 +136,25 @@
     font-size: 12px;
   }
 
-  .menu-toggle{ display:none; background:none; border:none; color:var(--texto); font-size:26px; cursor:pointer; }
+  .menu-toggle{
+    display: none;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--borda);
+    border-radius: 4px;
+    color: var(--texto);
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .menu-toggle:hover,
+  .menu-toggle:focus-visible{ border-color: var(--vermelho); color: var(--amarelo-ouro); }
+  body.menu-open,
+  body.cart-open{ overflow: hidden; }
 
   /* =========================================================
      HERO — abre com a maior afirmação visual da marca
@@ -249,11 +276,13 @@
   /* CARRINHO / LOJA */
   .produtos-grid{
     display:grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    grid-template-columns: minmax(0, 560px);
+    justify-content: center;
     gap: 22px;
     margin-bottom: 30px;
   }
   .produto-card{
+    width: 100%;
     background: var(--fundo-card);
     border: 1px solid var(--borda);
     border-radius: 6px;
@@ -262,19 +291,85 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
   .produto-card:hover{ transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,0.4); }
-  .produto-img{
-    height: 170px;
-    display:flex; align-items:center; justify-content:center;
+  .produto-galeria{
+    position: relative;
+    height: clamp(260px, 42vw, 360px);
+    overflow: hidden;
     background: linear-gradient(135deg, var(--vinho), var(--preto));
     border-bottom: 1px solid var(--borda);
+    touch-action: pan-y;
+    user-select: none;
+    cursor: grab;
   }
-  .produto-img img{
-    height: 78%; width:auto;
-    max-width: 78%;
-    object-fit: contain;
+  .produto-galeria:active{ cursor: grabbing; }
+  .produto-slides{
+    display:flex;
+    height:100%;
+    transition: transform 0.3s ease;
+    will-change: transform;
+  }
+  .produto-slide{
+    min-width:100%;
+    flex: 0 0 100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 26px 58px;
+  }
+  .produto-slide img{
+    width:100%;
+    height:100%;
+    max-width:100%;
+    object-fit:contain;
+    pointer-events:none;
     transition: transform 0.25s ease;
   }
-  .produto-card:hover .produto-img img{ transform: scale(1.06); }
+  .produto-card:hover .produto-slide img{ transform: scale(1.04); }
+  .produto-gallery-btn{
+    position:absolute;
+    top:50%;
+    z-index:2;
+    width:40px;
+    height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transform:translateY(-50%);
+    border:1px solid var(--borda);
+    border-radius:50%;
+    background:rgba(14,13,13,0.78);
+    color:var(--texto);
+    font-size:28px;
+    line-height:1;
+    cursor:pointer;
+    transition:background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  .produto-gallery-btn:hover,
+  .produto-gallery-btn:focus-visible{ background:var(--vermelho); color:var(--amarelo-ouro); border-color:var(--vermelho); }
+  .produto-gallery-prev{ left:12px; }
+  .produto-gallery-next{ right:12px; }
+  .produto-indicadores{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:12px;
+    z-index:2;
+    display:flex;
+    justify-content:center;
+    gap:8px;
+  }
+  .produto-indicador{
+    width:10px;
+    height:10px;
+    padding:0;
+    border:1px solid var(--texto);
+    border-radius:50%;
+    background:transparent;
+    cursor:pointer;
+  }
+  .produto-indicador.ativo{ background:var(--amarelo-ouro); border-color:var(--amarelo-ouro); }
+  .produto-indicador:focus-visible{ outline:2px solid var(--texto); outline-offset:3px; }
   .produto-body{ padding: 18px 20px; display:flex; flex-direction:column; gap:10px; flex:1; }
   .produto-body h3{ font-size: 18px; text-transform: uppercase; }
   .produto-preco{ color: var(--amarelo-ouro); font-family: var(--fonte-display); font-size: 20px; }
@@ -297,6 +392,9 @@
      NOTIFICAÇÃO (TOAST) DE ITEM ADICIONADO
      ========================================================= */
   .toast-notificacao{
+    width: min(420px, calc(100% - 28px));
+    justify-content: center;
+    text-align: center;
     position: fixed;
     bottom: 30px;
     left: 50%;
@@ -474,6 +572,9 @@
   }
   .pix-info p{ font-size: 13px; margin: 0 0 8px; }
   .pix-info code{
+    display: inline-block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
     background: var(--preto); padding: 4px 8px; border-radius:3px; color: var(--amarelo-ouro); font-size: 13px; border: 1px solid var(--borda);
   }
 
@@ -492,20 +593,81 @@
   /* =========================================================
      RESPONSIVIDADE
      ========================================================= */
-  @media (max-width: 760px){
+  @media (max-width: 980px){
+    .header-inner{ gap: 16px; }
+    nav ul{ gap: 14px; }
+    nav a{ font-size: 13px; letter-spacing: 1px; }
+    #cart-toggle{ padding-inline: 11px; }
+  }
+
+  @media (max-width: 820px){
+    .container{ width: min(100% - 36px, 680px); }
+    .header-inner{ width: min(100% - 36px, 680px); min-height: 76px; }
+    .logo-wrap img{ height: 64px; }
+    .menu-toggle{ display: inline-flex; margin-left: auto; }
     nav{
       position: absolute;
-      top: 100%; left:0; right:0;
+      top: 100%; left: 0; right: 0;
+      max-height: calc(100vh - 76px);
+      overflow-y: auto;
       background: rgba(14,13,13,0.98);
       border-bottom: 1px solid var(--borda);
-      display:none;
-      flex-direction:column;
+      box-shadow: 0 12px 26px rgba(0,0,0,0.35);
+      display: none;
     }
-    nav.open{ display:flex; }
-    nav ul{ flex-direction:column; padding: 16px 24px; gap: 18px; }
-    .menu-toggle{ display:block; }
-    .logo-wrap img{ height: 84px; }
-    .hero{ padding-top: 130px; }
+    nav.open{ display: block; }
+    nav ul{
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: 8px 18px 16px;
+    }
+    nav li{ border-bottom: 1px solid rgba(212,169,86,0.14); }
+    nav li:last-child{ border-bottom: 0; padding-top: 12px; }
+    nav a{ display: block; padding: 13px 8px; font-size: 15px; }
+    nav a::after{ bottom: 4px; }
+    #cart-toggle{ width: 100%; justify-content: center; min-height: 46px; }
+    .hero{ padding: 132px 18px 34px; }
+    .hero p.tagline{ letter-spacing: 2px; }
+    .section-title{ margin-bottom: 22px; }
+    .contato-card{ padding: 18px 20px; }
+    .redes-grid{ gap: 12px; }
+    .rede-item{ flex: 1 1 140px; justify-content: center; padding-inline: 14px; }
+    .cart-drawer{ width: min(440px, 100vw); }
+  }
+
+  @media (max-width: 560px){
+    .container{ width: min(100% - 28px, 520px); }
+    .header-inner{ width: min(100% - 28px, 520px); }
+    .logo-wrap img{ height: 56px; }
+    .hero{ padding-top: 118px; }
+    .hero h1{ font-size: clamp(34px, 11vw, 48px); }
+    .hero p.tagline{ font-size: 12px; letter-spacing: 1.5px; }
+    section{ padding: 26px 0; }
+    .section-text{ font-size: 15px; }
+    .produtos-grid{ grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    .produto-galeria{ height: 300px; }
+    .produto-body{ padding: 13px; gap: 8px; }
+    .produto-body h3{ font-size: 16px; }
+    .produto-preco{ font-size: 18px; }
+    .btn-add{ padding: 10px 8px; font-size: 12px; }
+    .pix-box{ gap: 14px; padding: 16px; }
+    .pix-box img{ width: 104px; height: 104px; }
+    .pix-info{ min-width: 0; }
+    .cart-drawer-head{ padding: 16px; }
+    .cart-drawer-body{ padding: 18px 16px 28px; }
+    #cart-items li{ align-items: flex-start; }
+    .item-nome{ flex-basis: 100%; }
+    .item-subtotal{ margin-left: auto; }
+    footer{ padding-inline: 14px; }
+  }
+
+  @media (max-width: 380px){
+    .produtos-grid{ grid-template-columns: minmax(0, 1fr); }
+    .produto-galeria{ height: 250px; }
+    .produto-slide{ padding-inline: 48px; }
+    .pix-box{ flex-direction: column; align-items: center; text-align: center; }
+    .pix-info{ width: 100%; }
   }
 </style>
 </head>
@@ -517,8 +679,8 @@
     <div class="logo-wrap">
       <img src="logo.png" alt="Bull Racing FSAE">
     </div>
-    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">&#9776;</button>
-    <nav id="mainNav">
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="mainNav">&#9776;</button>
+    <nav id="mainNav" aria-label="Navegação principal">
       <ul>
         <li><a href="#sobre">Sobre</a></li>
         <li><a href="#doacoes">Doações</a></li>
@@ -685,15 +847,15 @@
      DADOS DOS PRODUTOS
      ========================================================= */
   const produtos = [
-    { id: 'camiseta', nome: 'Camiseta Oficial', preco: 79.90, imagem: 'produto-camiseta.png' },
-    { id: 'bone',     nome: 'Boné Bull Racing',  preco: 59.90, imagem: 'produto-bone.png' },
-    { id: 'caneca',   nome: 'Caneca Oficial',    preco: 39.90, imagem: 'produto-caneca.png' },
-    { id: 'camiseta-2', nome: 'Camiseta Oficial', preco: 79.90, imagem: 'produto-camiseta.png' },
-    { id: 'bone-2',     nome: 'Boné Bull Racing',  preco: 59.90, imagem: 'produto-bone.png' },
-    { id: 'caneca-2',   nome: 'Caneca Oficial',    preco: 39.90, imagem: 'produto-caneca.png' },
-    { id: 'camiseta-3', nome: 'Camiseta Oficial', preco: 79.90, imagem: 'produto-camiseta.png' },
-    { id: 'bone-3',     nome: 'Boné Bull Racing',  preco: 59.90, imagem: 'produto-bone.png' },
-    { id: 'caneca-3',   nome: 'Caneca Oficial',    preco: 39.90, imagem: 'produto-caneca.png' },
+    {
+      id: 'bottons',
+      nome: 'Bottons Bull Racing',
+      preco: 3.00,
+      imagens: [
+        'produto-bottons-1.png',
+        'produto-bottons-2.png',
+      ]
+    }
   ];
 
   // Estado do carrinho: objeto { idProduto: quantidade }
@@ -705,12 +867,34 @@
     return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
 
-  // Renderiza os cards de produto na grade
+  // Monta a galeria com slides, setas e indicadores
+  function renderizarGaleria(produto){
+    const slides = produto.imagens.map((imagem, indice) => `
+      <div class="produto-slide" role="group" aria-roledescription="slide" aria-label="Foto ${indice + 1} de ${produto.imagens.length}">
+        <img src="${imagem}" alt="${produto.nome} — foto ${indice + 1}">
+      </div>
+    `).join('');
+
+    const indicadores = produto.imagens.map((_, indice) => `
+      <button class="produto-indicador${indice === 0 ? ' ativo' : ''}" type="button" data-slide="${indice}" aria-label="Ver foto ${indice + 1}" aria-current="${indice === 0 ? 'true' : 'false'}"></button>
+    `).join('');
+
+    return `
+      <div class="produto-galeria" data-galeria="${produto.id}" tabindex="0" aria-label="Galeria de fotos de ${produto.nome}">
+        <div class="produto-slides">${slides}</div>
+        <button class="produto-gallery-btn produto-gallery-prev" type="button" aria-label="Ver foto anterior">‹</button>
+        <button class="produto-gallery-btn produto-gallery-next" type="button" aria-label="Ver próxima foto">›</button>
+        <div class="produto-indicadores" aria-label="Selecionar foto">${indicadores}</div>
+      </div>
+    `;
+  }
+
+  // Renderiza o único produto da loja
   function renderizarProdutos(){
     const grid = document.getElementById('produtos-grid');
     grid.innerHTML = produtos.map(p => `
       <div class="produto-card">
-        <div class="produto-img"><img src="${p.imagem}" alt="${p.nome}"></div>
+        ${renderizarGaleria(p)}
         <div class="produto-body">
           <h3>${p.nome}</h3>
           <span class="produto-preco">${formatarMoeda(p.preco)}</span>
@@ -718,6 +902,51 @@
         </div>
       </div>
     `).join('');
+
+    grid.querySelectorAll('[data-galeria]').forEach(inicializarGaleria);
+  }
+
+  // Ativa navegação por setas, teclado e gesto lateral no celular
+  function inicializarGaleria(galeria){
+    const trilho = galeria.querySelector('.produto-slides');
+    const indicadores = [...galeria.querySelectorAll('.produto-indicador')];
+    const total = indicadores.length;
+    let indiceAtual = 0;
+    let inicioToque = null;
+
+    function mostrarSlide(novoIndice){
+      indiceAtual = (novoIndice + total) % total;
+      trilho.style.transform = `translateX(-${indiceAtual * 100}%)`;
+      indicadores.forEach((indicador, indice) => {
+        const ativo = indice === indiceAtual;
+        indicador.classList.toggle('ativo', ativo);
+        indicador.setAttribute('aria-current', ativo ? 'true' : 'false');
+      });
+    }
+
+    galeria.querySelector('.produto-gallery-prev').addEventListener('click', () => mostrarSlide(indiceAtual - 1));
+    galeria.querySelector('.produto-gallery-next').addEventListener('click', () => mostrarSlide(indiceAtual + 1));
+    indicadores.forEach(indicador => {
+      indicador.addEventListener('click', () => mostrarSlide(Number(indicador.dataset.slide)));
+    });
+
+    galeria.addEventListener('keydown', (evento) => {
+      if(evento.key === 'ArrowLeft') mostrarSlide(indiceAtual - 1);
+      if(evento.key === 'ArrowRight') mostrarSlide(indiceAtual + 1);
+    });
+
+    galeria.addEventListener('touchstart', (evento) => {
+      inicioToque = evento.changedTouches[0].clientX;
+    }, { passive: true });
+
+    galeria.addEventListener('touchend', (evento) => {
+      if(inicioToque === null) return;
+      const deslocamento = evento.changedTouches[0].clientX - inicioToque;
+      if(Math.abs(deslocamento) > 40){
+        mostrarSlide(deslocamento < 0 ? indiceAtual + 1 : indiceAtual - 1);
+      }
+      inicioToque = null;
+    }, { passive: true });
   }
 
   // Exibe o balãozinho (toast) de notificação
@@ -752,14 +981,17 @@
 
   // Abre / fecha o painel lateral (drawer) do carrinho
   function abrirCarrinho(){
+    fecharMenu();
     document.getElementById('cart-drawer').classList.add('open');
     document.getElementById('cart-overlay').classList.add('open');
     document.getElementById('cart-drawer').setAttribute('aria-hidden', 'false');
+    document.body.classList.add('cart-open');
   }
   function fecharCarrinho(){
     document.getElementById('cart-drawer').classList.remove('open');
     document.getElementById('cart-overlay').classList.remove('open');
     document.getElementById('cart-drawer').setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('cart-open');
   }
 
   // Recalcula e redesenha a lista do carrinho + totais
@@ -839,13 +1071,31 @@
   }
 
   // Menu mobile (hambúrguer)
-  document.getElementById('menuToggle').addEventListener('click', () => {
-    document.getElementById('mainNav').classList.toggle('open');
-  });
+  const menuToggle = document.getElementById('menuToggle');
+  const mainNav = document.getElementById('mainNav');
 
-  // Fecha o menu mobile ao clicar em um item
+  function fecharMenu(){
+    mainNav.classList.remove('open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    menuToggle.setAttribute('aria-label', 'Abrir menu');
+    document.body.classList.remove('menu-open');
+  }
+
+  function alternarMenu(){
+    const aberto = mainNav.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', String(aberto));
+    menuToggle.setAttribute('aria-label', aberto ? 'Fechar menu' : 'Abrir menu');
+    document.body.classList.toggle('menu-open', aberto);
+  }
+
+  menuToggle.addEventListener('click', alternarMenu);
+
+  // Fecha o menu mobile ao clicar em um item ou redimensionar para desktop
   document.querySelectorAll('#mainNav a').forEach(link => {
-    link.addEventListener('click', () => document.getElementById('mainNav').classList.remove('open'));
+    link.addEventListener('click', fecharMenu);
+  });
+  window.addEventListener('resize', () => {
+    if(window.innerWidth > 820) fecharMenu();
   });
 
   // Abertura/fechamento do painel lateral do carrinho
